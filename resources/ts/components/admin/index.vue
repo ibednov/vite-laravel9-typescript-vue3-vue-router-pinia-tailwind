@@ -1,9 +1,10 @@
 <script setup lang="ts">
-//
+import NavbarLeft from './navbarLeft.vue';
 </script>
 
 <template>
-    <router-link :to="{ name: 'home' }"> go to front</router-link>
-
-    <div>index admin</div>
+    <div class="flex flex-row">
+        <NavbarLeft class="" />
+        <RouterView class="grow" />
+    </div>
 </template>

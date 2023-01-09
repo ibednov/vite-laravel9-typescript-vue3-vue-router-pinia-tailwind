@@ -21,8 +21,10 @@ module.exports = {
             // indigo: colors.indigo,
             // yellow: colors.yellow,
             main: '#A0D1FB',
-            second: '#F1F9FE',
-            // gray: #868686
+            mainHover: '#5aafff',
+            // second: '#F1F9FE',
+            second: '#ddd', // need to change
+            third: '#E9E9E9',
         },
     },
     plugins: [],

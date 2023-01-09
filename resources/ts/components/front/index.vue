@@ -4,5 +4,5 @@
 
 <template>
     <router-link :to="{ name: 'admin' }"> go to admin </router-link>
-    <div>Index user</div>
+    <div class="text-4xl">Index user</div>
 </template>
