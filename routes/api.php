@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CategoriesController;
+use App\Http\Controllers\API\IdeasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,3 +31,19 @@ Route::controller(AuthController::class)->group(
         Route::get('logout', 'logout')->middleware('auth:sanctum');
     }
 );
+
+Route::group(['prefix' => 'ideas', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [IdeasController::class, 'index']);
+    Route::post('add', [IdeasController::class, 'add']);
+    Route::get('edit/{id}', [IdeasController::class, 'edit']);
+    Route::post('update/{id}', [IdeasController::class, 'update']);
+    Route::delete('delete/{id}', [IdeasController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'categories', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [CategoriesController::class, 'index']);
+    Route::post('add', [CategoriesController::class, 'add']);
+    Route::get('edit/{id}', [CategoriesController::class, 'edit']);
+    Route::post('update/{id}', [CategoriesController::class, 'update']);
+    Route::delete('delete/{id}', [CategoriesController::class, 'delete']);
+});
