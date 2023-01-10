@@ -1,30 +1,79 @@
 <script setup lang="ts">
 import { useCatsStore } from '@/stores/cats';
+import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 
-const cats = useCatsStore().cats;
-const catId = route.params.id;
-const cat = useCatsStore().cats[catId];
-// const index = cats.indexOf(catId);
+const cats = useCatsStore();
+const routeId = route.params.id;
+const catId = useCatsStore().cats[routeId].id;
+
+console.log('cat id by route ' + catId);
+
 console.log(catId);
+
+// const cat = ref({});
+const cat = useCatsStore().cats[routeId];
+
+const config = {
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+    },
+};
+
+// need to fix
+const getCat = (id: number) => {
+    axios.get('/sanctum/csrf-cookie').then((response) => {
+        axios
+            .get('/api/categories/edit/' + id, config)
+            .then((response) => {
+                cat.value = response.data;
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    });
+};
+
+// console.log('cat data ' + getCat(catId).data);
+
+// console.log(cats.getCatsByID(5));
+
+// const catId = cat.value.id;
+// const index = cats.indexOf(catId);
+// console.log('routeId ' + routeId + '  catId ' + catId);
 
 const newName = ref('');
 const newDesc = ref('');
-const newState: boolean = ref();
+const newState = ref();
 const previewImage: object = ref({
     image: ref(null),
     imageUrl: ref(null),
 });
 
-onMounted(() => {
+const getData = () => {
+    // await getCat(catId);
+    // console.log(cat);
+
+    // newName.value = cat.value?.name;
+
+    // console.log(cat.value[0]);
+
+    // console.log('id   ' + cat.value.id);
+
     if (cat.name) newName.value = cat.name;
     if (cat.desc) newDesc.value = cat.desc;
     if (cat.image) previewImage.value = cat.image;
-    if (cat.isEnabled) newState.value = cat.isEnabled;
+    if (cat.isEnabled) newState.value = cat.isEnabled == 1 ? true : false;
+
+    console.log(cat.isEnabled);
+};
+
+onMounted(async () => {
+    await getData();
 });
 
 const uploadedImage = ref<File | null>();
@@ -40,10 +89,7 @@ const handleFileUpload = async () => {
 
 const edit = () => {
     if (newName.value && previewImage.value && newDesc.value) {
-        console.log(newState.value);
-        console.log(cat);
-
-        const object = {
+        const data = {
             id: cat.id,
             name: newName.value,
             desc: newDesc.value,
@@ -53,9 +99,19 @@ const edit = () => {
             isEnabled: newState.value,
         };
 
-        useCatsStore().cats[catId] = object;
+        axios.get('/sanctum/csrf-cookie', config).then((response) => {
+            axios
+                .post('/api/categories/update/' + catId, data, config)
+                .then((response) => {
+                    router.push({ name: 'ideas-cats' });
+                })
+                .catch(function (error) {
+                    console.error(error);
+                });
+        });
 
-        router.push({ name: 'ideas-cats', replace: true });
+        // useCatsStore().cats[catId] = object;
+        // router.push({ name: 'ideas-cats', replace: true });
     } else {
         alert('Заполните все поля');
     }

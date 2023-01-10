@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import { useCatsStore } from '@/stores/cats';
 import { useIdeasStore } from '@/stores/ideas';
+import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 
-const ideaId = route.params.id;
-const idea = useIdeasStore().ideas[ideaId];
+const routeId = route.params.id;
+
+const idea = useIdeasStore().ideas[routeId];
+
+const ideaId = useIdeasStore().ideas[routeId].id;
 const cats: object = useCatsStore().cats;
+
+console.log(ideaId);
 
 const newCat = ref();
 const newAuthor = ref();
@@ -26,7 +32,7 @@ onMounted(() => {
     if (idea.desc) newDesc.value = idea.desc;
     if (idea.status) newStatus.value = idea.status;
     if (idea.author) newAuthor.value = idea.author;
-    if (idea.cat) newCat.value = idea.cat;
+    if (idea.category) newCat.value = idea.category;
     if (idea.previewImage) previewImage.value = idea.previewImage;
 });
 
@@ -42,22 +48,57 @@ const handleFileUpload = async () => {
 };
 
 const edit = () => {
+    // if (newTheme.value && previewImage.value && newDesc.value) {
+    //     const object = {
+    //         id: idea.id,
+    //         date_created: idea.date_created,
+    //         date_updated: new Date(),
+    //         theme: newTheme,
+    //         desc: newDesc,
+    //         status: newStatus,
+    //         author: newAuthor,
+    //         cat: newCat,
+    //         image: previewImage.value,
+    //         likes: 0,
+    //     };
+
+    //     useIdeasStore().ideas[ideaId] = object;
+
+    //     router.push({ name: 'ideas-list', replace: true });
+    // } else {
+    //     alert('Заполните все поля');
+    // }
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+        },
+    };
+
     if (newTheme.value && previewImage.value && newDesc.value) {
-        const object = {
+        const data = {
             id: idea.id,
-            date_created: idea.date_created,
-            date_updated: new Date(),
-            theme: newTheme,
-            desc: newDesc,
-            status: newStatus,
-            author: newAuthor,
-            cat: newCat,
+            desc: newDesc.value,
             image: previewImage.value,
-            likes: 0,
+            likes: idea.likes,
+            theme: newTheme.value,
+            status: newStatus.value,
+            author: newAuthor.value,
+            category: newCat.value,
         };
 
-        useIdeasStore().ideas[ideaId] = object;
+        axios.get('/sanctum/csrf-cookie', config).then((response) => {
+            axios
+                .post('/api/ideas/update/' + ideaId, data, config)
+                .then((response) => {
+                    // router.push({ name: 'ideas-list' });
+                })
+                .catch(function (error) {
+                    console.error(error);
+                });
+        });
 
+        // useCatsStore().cats[catId] = object;
         router.push({ name: 'ideas-list', replace: true });
     } else {
         alert('Заполните все поля');
@@ -73,7 +114,7 @@ const imageRemove = () => {
 <template>
     <div class="flex flex-col py-3">
         <div class="flex flex-row justify-between py-2 px-10">
-            <div class="text-2xl font-semibold">Добавление идеи</div>
+            <div class="text-2xl font-semibold">Редактирование идеи</div>
             <div class="flex flex-row gap-2">
                 <router-link
                     :to="{ name: 'ideas-list' }"
@@ -98,7 +139,11 @@ const imageRemove = () => {
                     class="bg-third w-1/2 p-2 rounded text-sm focus:bg-white focus:border-1 focus:border-third"
                 >
                     <option disabled selected value="">Категория</option>
-                    <option :value="i.id" v-for="i in cats" v-bind:key="i.id">
+                    <option
+                        :value="i.stringId"
+                        v-for="i in cats"
+                        v-bind:key="i.id"
+                    >
                         {{ i.name }}
                     </option>
                 </select>

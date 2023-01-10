@@ -3,6 +3,8 @@ import { useCatsStore } from '@/stores/cats';
 
 const cats = useCatsStore();
 
+cats.getCats();
+
 const remove = (id: string) => {
     console.log('try to remove');
     cats.catsRemove(id);
@@ -19,17 +21,18 @@ const remove = (id: string) => {
             </div>
         </div>
 
-        <div v-if="cats.cats" class="flex flex-row w-full">
+        <div v-if="cats.cats" class="relative overflow-x-auto sm:rounded-lg">
             <table class="w-full mt-4 font-semibold text-sm">
                 <thead class="bg-second text-gray-500 py-10">
                     <tr class="py-10">
-                        <td class="pl-10 py-4">#</td>
-                        <td>Название</td>
-                        <td>Описание</td>
-                        <td>Кол-во идей</td>
-                        <td>Кол-во лайков</td>
-                        <td>Статус</td>
-                        <td class="pr-10">Действие</td>
+                        <th scope="col" class="pl-10 py-4">#</th>
+                        <th scope="col">id</th>
+                        <th scope="col">Название</th>
+                        <th scope="col">Описание</th>
+                        <th scope="col">Кол-во идей</th>
+                        <th scope="col">Кол-во лайков</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col" class="pr-10">Действие</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,14 +42,16 @@ const remove = (id: string) => {
                         class="border-b-2 py-2"
                     >
                         <td class="pl-10">{{ index + 1 }}</td>
+
+                        <td>{{ i?.id }}</td>
                         <td>{{ i?.name }}</td>
                         <td>
                             {{ i?.desc }}
                         </td>
-                        <td>{{ i?.ideasCount }}</td>
+                        <td>{{ i?.countIdeas }}</td>
                         <td>{{ i?.likes }}</td>
                         <td>
-                            <div v-if="i.isEnabled">Включена</div>
+                            <div v-if="i.isEnabled == 1">Включена</div>
                             <div v-else>Выключена</div>
                         </td>
                         <td class="pb-10 align-middle flex items-center">

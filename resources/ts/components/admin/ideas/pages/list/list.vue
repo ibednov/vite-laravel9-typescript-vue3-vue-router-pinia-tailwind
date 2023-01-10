@@ -6,6 +6,8 @@ import moment from 'moment';
 const ideas = useIdeasStore();
 const cats = useCatsStore();
 
+ideas.getIdeas();
+
 console.log(cats);
 
 const remove = (id: string) => {
@@ -24,7 +26,10 @@ const remove = (id: string) => {
             </div>
         </div>
 
-        <div v-if="ideas.ideas" class="flex flex-row w-full">
+        <div
+            v-if="ideas.ideas"
+            class="flex flex-row w-full relative overflow-x-auto sm:rounded-lg"
+        >
             <table class="w-full mt-4 font-semibold text-sm">
                 <thead class="bg-second text-gray-500 py-10">
                     <tr class="py-10">
@@ -47,7 +52,7 @@ const remove = (id: string) => {
                         <td class="pl-10">{{ index + 1 }}</td>
                         <td>
                             <div v-for="c in cats.cats" :key="c.id">
-                                <div v-if="i.cat === c.id">
+                                <div v-if="i.category == c.id">
                                     {{ c.name }}
                                 </div>
                             </div>
@@ -58,7 +63,15 @@ const remove = (id: string) => {
                         <td>{{ moment(i?.date).format('D.MM.YYYY') }}</td>
                         <td>{{ i?.theme }}</td>
                         <td>{{ i?.likes }}</td>
-                        <td>{{ i?.status }}</td>
+                        <td>
+                            {{
+                                i?.status == 'completed'
+                                    ? 'Реализована'
+                                    : i?.status == 'work'
+                                    ? 'В реализации'
+                                    : 'Новая'
+                            }}
+                        </td>
 
                         <td class="pb-10 align-middle flex items-center">
                             <div class="flex flex-row gap-2 top-10 self-center">
