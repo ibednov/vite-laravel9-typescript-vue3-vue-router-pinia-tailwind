@@ -22,8 +22,8 @@ module.exports = {
             // yellow: colors.yellow,
             main: '#A0D1FB',
             mainHover: '#5aafff',
-            // second: '#F1F9FE',
-            second: '#ddd', // need to change
+            second: '#F1F9FE',
+            // second: '#ddd', // need to change
             third: '#E9E9E9',
         },
     },
