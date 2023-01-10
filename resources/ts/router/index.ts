@@ -11,6 +11,17 @@ const router = createRouter({
                 title: 'Список идей (главная)',
                 requiresAuth: false,
             },
+            children: [
+                {
+                    path: ':id',
+                    name: 'categoryById',
+                    meta: {
+                        title: 'Категория #',
+                    },
+                    component: () =>
+                        import('@/components/front/ideasByCats.vue'),
+                },
+            ],
         },
 
         {
